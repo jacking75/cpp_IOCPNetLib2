@@ -434,6 +434,16 @@ namespace NetLib
 				Connection* pConnection = nullptr;
 
 				//TODO: 모든 GetQueuedCompletionStatus를 GetQueuedCompletionStatusEx 버전을 사용하도록 변경. 
+				
+				// GetQueuedCompletionStatusEx의 고민 거리 
+				// GetQueuedCompletionStatusEx의 반환 값이 실패인 경우 어떻게 하나? 복수 IO 결과이므로 하나씩 비교해야 한다.
+				// 반환 값이 실패인 경우는 거의 없다고 보면 되고, 문제는 각 IO 결과마다 성공,실패를 알아보는 것이 좋다.
+				// https://stackoverflow.com/questions/22575832/getqueuedcompletionstatusex-doesnt-return-a-per-overlapped-error-code
+				// 에서는 overlapped->Internal의 값을 WSAGetOverlappedResult()로 알아본다. 그런데 WSAGetOverlappedResult()는 시스템콜이라서
+				// 성능에 신경쓰인다.
+				
+				// https://aoziczero.tistory.com/entry/Iocp-GetQueuedCompletionStatusEx 
+				// OVERLAPPED_ENTRY::Internal의 값이 0 이 아닌 경우만 에러라고 한다. 즉 이 값이 0인 아닌 경우만 에러처리를 한다.
 				auto result = GetQueuedCompletionStatus(
 					m_WrokIOCPList[iocpIndex],
 					&ioSize,
