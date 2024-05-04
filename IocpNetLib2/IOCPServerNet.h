@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <vector>
 #include <thread>
@@ -15,22 +15,22 @@
 #include "MessagePool.h"
 #include "MiniDump.h"
 
-// ÄÚ¾î¼ö ÀÌ»óÀÇ iocp °´Ã¼¸¦ °¡Áö°í °¢ °´Ã¼´Â Æ¯Á¤ IOCP¿¡¼­¸¸ Ã³¸®µÇµµ·Ï ÇÑ´Ù.
-// ÀÌ·¸°Ô ÇØ¼­ ¼¼¼ÇÀº ¸ÖÆ¼½º·¹µå ¼¼ÀÌÇÁÇÏ°Ô µ¿ÀÛÇÏµµ·Ï ÇÑ´Ù.
+// ì½”ì–´ìˆ˜ ì´ìƒì˜ iocp ê°ì²´ë¥¼ ê°€ì§€ê³  ê° ê°ì²´ëŠ” íŠ¹ì • IOCPì—ì„œë§Œ ì²˜ë¦¬ë˜ë„ë¡ í•œë‹¤.
+// ì´ë ‡ê²Œ í•´ì„œ ì„¸ì…˜ì€ ë©€í‹°ìŠ¤ë ˆë“œ ì„¸ì´í”„í•˜ê²Œ ë™ì‘í•˜ë„ë¡ í•œë‹¤.
 
 namespace NetLib
 {
-	//TODO ¸ğµç ¼¼¼ÇÀ» ÁÖ±âÀûÀ¸·Î Á¶»ç ±â´É ±¸ÇöÇÏ±â
-	// - ¿¬°áÀÌ ²÷¾îÁ³´Âµ¥ Àç »ç¿ëÇÏ°í ÀÖ´ÂÁö Á¶»çÇÏ±â
-	// - PostQueuedCompletionStatus°¡ ½ÇÆĞ ÇßÀ» ¶§ µÚ¿¡¼­ °ü·Ã ¿¡·¯¸¦ º¹±¸ÇÏ´Â ±â´ÉÀÌ ÇÊ¿ä
+	//TODO ëª¨ë“  ì„¸ì…˜ì„ ì£¼ê¸°ì ìœ¼ë¡œ ì¡°ì‚¬ ê¸°ëŠ¥ êµ¬í˜„í•˜ê¸°
+	// - ì—°ê²°ì´ ëŠì–´ì¡ŒëŠ”ë° ì¬ ì‚¬ìš©í•˜ê³  ìˆëŠ”ì§€ ì¡°ì‚¬í•˜ê¸°
+	// - PostQueuedCompletionStatusê°€ ì‹¤íŒ¨ í–ˆì„ ë•Œ ë’¤ì—ì„œ ê´€ë ¨ ì—ëŸ¬ë¥¼ ë³µêµ¬í•˜ëŠ” ê¸°ëŠ¥ì´ í•„ìš”
 	
-	//TODO º¸³»±âµµ PostQueuedCompletionStatus¸¦ »ç¿ëÇÏ¿© ÇØ´ç ¿öÅ© ½º·¹µå¿¡¼­ Ã³¸®ÇÏµµ·Ï ÇÑ´Ù.
-	// ¾ÖÇÃ¸®ÄÉÀÌ¼Ç¿¡¼­ Send¸¦ È£ÃâÇÏ¸é ¹öÆÛ¿¡ º¹»ç ÈÄ PostQueuedCompletionStatus·Î ¼¼¼Ç¿¡ ¿¬°áµÈ IOCP·Î ¸Ş½ÃÁö¸¦ º¸³»°í ¿©±â¼­ WSASend¸¦ È£ÃâÇÏµµ·Ï ÇÑ´Ù.
+	//TODO ë³´ë‚´ê¸°ë„ PostQueuedCompletionStatusë¥¼ ì‚¬ìš©í•˜ì—¬ í•´ë‹¹ ì›Œí¬ ìŠ¤ë ˆë“œì—ì„œ ì²˜ë¦¬í•˜ë„ë¡ í•œë‹¤.
+	// ì• í”Œë¦¬ì¼€ì´ì…˜ì—ì„œ Sendë¥¼ í˜¸ì¶œí•˜ë©´ ë²„í¼ì— ë³µì‚¬ í›„ PostQueuedCompletionStatusë¡œ ì„¸ì…˜ì— ì—°ê²°ëœ IOCPë¡œ ë©”ì‹œì§€ë¥¼ ë³´ë‚´ê³  ì—¬ê¸°ì„œ WSASendë¥¼ í˜¸ì¶œí•˜ë„ë¡ í•œë‹¤.
 
-	//TODO iocp ½º·¹µå´Â ¹«ÇÑ ´ë±âÇÏÁö ¾Ê°í ¾²±â °£°İ¸¸Å­ ±ú¾î³­´Ù(?)
-	// acceptThread´Â Æ¯Á¤ °£°İ¸¶´Ù Á¾·áµÈ ¼¼¼ÇÀ» ºñµ¿±â accept È£ÃâÇÑ´Ù
-	// workThread´Â Æ¯Á¤ °£°İ¸¶´Ù º¸³»±â Ã³¸®¸¦ ÇÑ´Ù.
-	// !! ¾Æ´Ï´Ù ÇØ´ç iocp ½º·¹µå¿¡ postQueue¸¦ º¸³»¼­ Ã³¸®ÇÏµµ·Ï ÇÑ´Ù. Áï ½º·¹µå°¡ ¸Ş½ÃÁö°¡ ÀÖÀ» ¶§±îÁö ±ú¾î³ªÁö ¾Êµµ·Ï ÇÑ´Ù. ¾Ñ ±×·¯³ª acceptÀÇ °æ¿ì Æ¯Á¤ ½Ã°£ÀÌ Áö³­ ÈÄ Ã³¸®ÇÏ°í ½Í±â ¶§¹®¿¡ ¸Ş½ÃÁö Àü´Ş·Î ÇÏ±â´Â Èûµéµí
+	//TODO iocp ìŠ¤ë ˆë“œëŠ” ë¬´í•œ ëŒ€ê¸°í•˜ì§€ ì•Šê³  ì“°ê¸° ê°„ê²©ë§Œí¼ ê¹¨ì–´ë‚œë‹¤(?)
+	// acceptThreadëŠ” íŠ¹ì • ê°„ê²©ë§ˆë‹¤ ì¢…ë£Œëœ ì„¸ì…˜ì„ ë¹„ë™ê¸° accept í˜¸ì¶œí•œë‹¤
+	// workThreadëŠ” íŠ¹ì • ê°„ê²©ë§ˆë‹¤ ë³´ë‚´ê¸° ì²˜ë¦¬ë¥¼ í•œë‹¤.
+	// !! ì•„ë‹ˆë‹¤ í•´ë‹¹ iocp ìŠ¤ë ˆë“œì— postQueueë¥¼ ë³´ë‚´ì„œ ì²˜ë¦¬í•˜ë„ë¡ í•œë‹¤. ì¦‰ ìŠ¤ë ˆë“œê°€ ë©”ì‹œì§€ê°€ ìˆì„ ë•Œê¹Œì§€ ê¹¨ì–´ë‚˜ì§€ ì•Šë„ë¡ í•œë‹¤. ì•— ê·¸ëŸ¬ë‚˜ acceptì˜ ê²½ìš° íŠ¹ì • ì‹œê°„ì´ ì§€ë‚œ í›„ ì²˜ë¦¬í•˜ê³  ì‹¶ê¸° ë•Œë¬¸ì— ë©”ì‹œì§€ ì „ë‹¬ë¡œ í•˜ê¸°ëŠ” í˜ë“¤ë“¯
 	
 
 	
@@ -396,7 +396,7 @@ namespace NetLib
 				OVERLAPPED_EX* pOverlappedEx = nullptr;
 				Connection* pConnection = nullptr;
 
-				//TODO: ¸ğµç GetQueuedCompletionStatus¸¦ GetQueuedCompletionStatusEx ¹öÀüÀ» »ç¿ëÇÏµµ·Ï º¯°æ. 
+				//TODO: ëª¨ë“  GetQueuedCompletionStatusë¥¼ GetQueuedCompletionStatusEx ë²„ì „ì„ ì‚¬ìš©í•˜ë„ë¡ ë³€ê²½. 
 				auto result = GetQueuedCompletionStatus(
 					m_hAcceptWorkIOCP,
 					&ioSize,
@@ -433,17 +433,17 @@ namespace NetLib
 				OVERLAPPED_EX* pOverlappedEx = nullptr;
 				Connection* pConnection = nullptr;
 
-				//TODO: ¸ğµç GetQueuedCompletionStatus¸¦ GetQueuedCompletionStatusEx ¹öÀüÀ» »ç¿ëÇÏµµ·Ï º¯°æ. 
+				//TODO: ëª¨ë“  GetQueuedCompletionStatusë¥¼ GetQueuedCompletionStatusEx ë²„ì „ì„ ì‚¬ìš©í•˜ë„ë¡ ë³€ê²½. 
 				
-				// GetQueuedCompletionStatusExÀÇ °í¹Î °Å¸® 
-				// GetQueuedCompletionStatusExÀÇ ¹İÈ¯ °ªÀÌ ½ÇÆĞÀÎ °æ¿ì ¾î¶»°Ô ÇÏ³ª? º¹¼ö IO °á°úÀÌ¹Ç·Î ÇÏ³ª¾¿ ºñ±³ÇØ¾ß ÇÑ´Ù.
-				// ¹İÈ¯ °ªÀÌ ½ÇÆĞÀÎ °æ¿ì´Â °ÅÀÇ ¾ø´Ù°í º¸¸é µÇ°í, ¹®Á¦´Â °¢ IO °á°ú¸¶´Ù ¼º°ø,½ÇÆĞ¸¦ ¾Ë¾Æº¸´Â °ÍÀÌ ÁÁ´Ù.
+				// GetQueuedCompletionStatusExì˜ ê³ ë¯¼ ê±°ë¦¬ 
+				// GetQueuedCompletionStatusExì˜ ë°˜í™˜ ê°’ì´ ì‹¤íŒ¨ì¸ ê²½ìš° ì–´ë–»ê²Œ í•˜ë‚˜? ë³µìˆ˜ IO ê²°ê³¼ì´ë¯€ë¡œ í•˜ë‚˜ì”© ë¹„êµí•´ì•¼ í•œë‹¤.
+				// ë°˜í™˜ ê°’ì´ ì‹¤íŒ¨ì¸ ê²½ìš°ëŠ” ê±°ì˜ ì—†ë‹¤ê³  ë³´ë©´ ë˜ê³ , ë¬¸ì œëŠ” ê° IO ê²°ê³¼ë§ˆë‹¤ ì„±ê³µ,ì‹¤íŒ¨ë¥¼ ì•Œì•„ë³´ëŠ” ê²ƒì´ ì¢‹ë‹¤.
 				// https://stackoverflow.com/questions/22575832/getqueuedcompletionstatusex-doesnt-return-a-per-overlapped-error-code
-				// ¿¡¼­´Â overlapped->InternalÀÇ °ªÀ» WSAGetOverlappedResult()·Î ¾Ë¾Æº»´Ù. ±×·±µ¥ WSAGetOverlappedResult()´Â ½Ã½ºÅÛÄİÀÌ¶ó¼­
-				// ¼º´É¿¡ ½Å°æ¾²ÀÎ´Ù.
+				// ì—ì„œëŠ” overlapped->Internalì˜ ê°’ì„ WSAGetOverlappedResult()ë¡œ ì•Œì•„ë³¸ë‹¤. ê·¸ëŸ°ë° WSAGetOverlappedResult()ëŠ” ì‹œìŠ¤í…œì½œì´ë¼ì„œ
+				// ì„±ëŠ¥ì— ì‹ ê²½ì“°ì¸ë‹¤.
 				
 				// https://aoziczero.tistory.com/entry/Iocp-GetQueuedCompletionStatusEx 
-				// OVERLAPPED_ENTRY::InternalÀÇ °ªÀÌ 0 ÀÌ ¾Æ´Ñ °æ¿ì¸¸ ¿¡·¯¶ó°í ÇÑ´Ù. Áï ÀÌ °ªÀÌ 0ÀÎ ¾Æ´Ñ °æ¿ì¸¸ ¿¡·¯Ã³¸®¸¦ ÇÑ´Ù.
+				// OVERLAPPED_ENTRY::Internalì˜ ê°’ì´ 0 ì´ ì•„ë‹Œ ê²½ìš°ë§Œ ì—ëŸ¬ë¼ê³  í•œë‹¤. ì¦‰ ì´ ê°’ì´ 0ì¸ ì•„ë‹Œ ê²½ìš°ë§Œ ì—ëŸ¬ì²˜ë¦¬ë¥¼ í•œë‹¤.
 				auto result = GetQueuedCompletionStatus(
 					m_WrokIOCPList[iocpIndex],
 					&ioSize,
@@ -495,16 +495,16 @@ namespace NetLib
 
 			if (PostNetMessage(pConnection, pConnection->GetCloseMsg()) != NetResult::Success)
 			{
-				//TODO Áß¿ä
-				//¾ÆÁÖ¾ÆÁÖ ³·Àº È®·üÀÌÁö¸¸ »ìÆĞ°¡ ¹ß»ıÇÒ ¼öµµ ÀÖ´Ù. 
-				//ÀÌ·± °æ¿ì´Â ¾ÖÇÃ¸®ÄÉÀÌ¼Ç Ãø¿¡¼­ ²÷¾îÁø ¼¼¼Ç¿¡ ´ëÇÑ Åëº¸¸¦ ¹ŞÁö ¸øÇÑ ¼¼¼Ç¿¡ »õ·Î¿î ¿¬°á ¸Ş½ÃÁö¸¦ ¹ŞÀ¸¸é ÀÌÀü ¼¼¼ÇÀ» ²÷¾îÁü Ã³¸®¸¦ ÇÏ°í, »õ·Î¿î ¿¬°áµµ ÀÏ´Ü ²÷µµ·Ï ÇÑ´Ù
-				// ResetConnection() È£ÃâÀ» ¿©±â¼­ ÇÏ¸é À§ÇèÇØÁú ¼ö ÀÖ´Ù
+				//TODO ì¤‘ìš”
+				//ì•„ì£¼ì•„ì£¼ ë‚®ì€ í™•ë¥ ì´ì§€ë§Œ ì‚´íŒ¨ê°€ ë°œìƒí•  ìˆ˜ë„ ìˆë‹¤. 
+				//ì´ëŸ° ê²½ìš°ëŠ” ì• í”Œë¦¬ì¼€ì´ì…˜ ì¸¡ì—ì„œ ëŠì–´ì§„ ì„¸ì…˜ì— ëŒ€í•œ í†µë³´ë¥¼ ë°›ì§€ ëª»í•œ ì„¸ì…˜ì— ìƒˆë¡œìš´ ì—°ê²° ë©”ì‹œì§€ë¥¼ ë°›ìœ¼ë©´ ì´ì „ ì„¸ì…˜ì„ ëŠì–´ì§ ì²˜ë¦¬ë¥¼ í•˜ê³ , ìƒˆë¡œìš´ ì—°ê²°ë„ ì¼ë‹¨ ëŠë„ë¡ í•œë‹¤
+				// ResetConnection() í˜¸ì¶œì„ ì—¬ê¸°ì„œ í•˜ë©´ ìœ„í—˜í•´ì§ˆ ìˆ˜ ìˆë‹¤
 				pConnection->ResetConnection();
 			}
 		}
 
-		//TODO PostNetMessage È£ÃâÀÌ ½ÇÆĞÇÑ °æ¿ì ¾î¶»°Ô Ã³¸®ÇÒÁö ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÑ °÷¿¡¼­ ÀûÀûÇÒ°Ô ±¸ÇöÇØ¾ß ÇÑ´Ù.
-		// Recv ¸Ş½ÃÁö¿¡ ´ëÇØ¼­´Â ¿¡·¯ Ã³¸® ÇÏÁö ¾Ê¾Æµµ µÉµí. ÀÌ °æ¿ì ¾Æ¸¶ Å¬¶óÀÌ¾ğÆ®°¡ Á¢¼ÓÀ» Â¥¸¦µí
+		//TODO PostNetMessage í˜¸ì¶œì´ ì‹¤íŒ¨í•œ ê²½ìš° ì–´ë–»ê²Œ ì²˜ë¦¬í• ì§€ ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•œ ê³³ì—ì„œ ì ì í• ê²Œ êµ¬í˜„í•´ì•¼ í•œë‹¤.
+		// Recv ë©”ì‹œì§€ì— ëŒ€í•´ì„œëŠ” ì—ëŸ¬ ì²˜ë¦¬ í•˜ì§€ ì•Šì•„ë„ ë ë“¯. ì´ ê²½ìš° ì•„ë§ˆ í´ë¼ì´ì–¸íŠ¸ê°€ ì ‘ì†ì„ ì§œë¥¼ë“¯
 		NetResult PostNetMessage(Connection* pConnection, Message* pMsg, const DWORD packetSize = 0)
 		{
 			if (m_hLogicIOCP == INVALID_HANDLE_VALUE || pMsg == nullptr)
@@ -512,7 +512,7 @@ namespace NetLib
 				return NetResult::fail_message_null;
 			}
 
-			// Boost.AsioÀÇ °æ¿ì ´Ù¸¥ ½ÄÀ¸·Î ¿À·ù¿¡ ´ëÇØ ¹æ¾îÇÏ°í ÀÖ´Ù. Âü°íÇÏÀÚ
+			// Boost.Asioì˜ ê²½ìš° ë‹¤ë¥¸ ì‹ìœ¼ë¡œ ì˜¤ë¥˜ì— ëŒ€í•´ ë°©ì–´í•˜ê³  ìˆë‹¤. ì°¸ê³ í•˜ì
 			//https://www.boost.org/doc/libs/1_67_0/boost/asio/detail/impl/win_iocp_io_context.ipp
 			auto result = PostQueuedCompletionStatus(
 				m_hLogicIOCP,
@@ -596,7 +596,7 @@ namespace NetLib
 
 		void RequestPacketForwardingLoop(Connection* pConnection, DWORD& remainByte, char* pBuffer)
 		{
-			//TODO ÆĞÅ¶ ºĞÇØ ºÎºĞÀ» °¡»ó ÇÔ¼ö·Î ¸¸µé±â 
+			//TODO íŒ¨í‚· ë¶„í•´ ë¶€ë¶„ì„ ê°€ìƒ í•¨ìˆ˜ë¡œ ë§Œë“¤ê¸° 
 
 			const int PACKET_HEADER_LENGTH = 5;
 			const int PACKET_SIZE_LENGTH = 2;
@@ -657,7 +657,7 @@ namespace NetLib
 									
 			pOverlappedEx->OverlappedExRemainByte += ioSize;
 
-			//¸ğµç ¸Ş¼¼Áö Àü¼ÛÇÏÁö ¸øÇÑ »óÈ²
+			//ëª¨ë“  ë©”ì„¸ì§€ ì „ì†¡í•˜ì§€ ëª»í•œ ìƒí™©
 			if (static_cast<DWORD>(pOverlappedEx->OverlappedExTotalByte) > pOverlappedEx->OverlappedExRemainByte)
 			{
 				pOverlappedEx->OverlappedExWsaBuf.buf += ioSize;
@@ -686,7 +686,7 @@ namespace NetLib
 					return;
 				}
 			}
-			//¸ğµç ¸Ş¼¼Áö Àü¼ÛÇÑ »óÈ²
+			//ëª¨ë“  ë©”ì„¸ì§€ ì „ì†¡í•œ ìƒí™©
 			else
 			{
 				pConnection->SendBufferSendCompleted(pOverlappedEx->OverlappedExTotalByte);

@@ -1,12 +1,12 @@
-#pragma once
+ï»¿#pragma once
 
 #include <thread>
 
 #include <DbgHelp.h> 
 
-//»ç¿ë¹ý
+//ì‚¬ìš©ë²•
 /*
-ÃÊ±âÈ­
+ì´ˆê¸°í™”
 MiniDump::Begin();
 
 if (MiniDump::CreateDirectories() == false)
@@ -14,7 +14,7 @@ if (MiniDump::CreateDirectories() == false)
 	return FUNCTION_RESULT_FAIL_MAKE_DIRECTORIES_DUMP;
 }
 
-Á¾·á
+ì¢…ë£Œ
 MiniDump::End();
 */
 namespace NetLib

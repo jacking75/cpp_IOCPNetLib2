@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <list>
 
@@ -8,7 +8,7 @@
 
 namespace NetLib
 {
-	//TODO Å©±âº° Ç®·Î ³ª´©±â
+	//TODO í¬ê¸°ë³„ í’€ë¡œ ë‚˜ëˆ„ê¸°
 	class MessagePool
 	{
 	public:

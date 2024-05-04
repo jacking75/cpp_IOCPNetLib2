@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CommonDefine.h"
 #include "Lock.h"

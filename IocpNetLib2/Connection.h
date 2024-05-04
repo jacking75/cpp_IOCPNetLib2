@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <mutex>
 #include <atomic>
@@ -71,7 +71,7 @@ namespace NetLib
 			BindAcceptExSocket();
 		}
 						
-		//TODO ÄÚµå ¼öÁ¤ È®ÀÎ: IOCP ½º·¹µå¿¡¼­ È£ÃâÇÒ ¶§¸¸ °¡´ÉÇÏ´Ù.
+		//TODO ì½”ë“œ ìˆ˜ì • í™•ì¸: IOCP ìŠ¤ë ˆë“œì—ì„œ í˜¸ì¶œí•  ë•Œë§Œ ê°€ëŠ¥í•˜ë‹¤.
 		void Close()
 		{			
 			if (m_ClientSocket != INVALID_SOCKET)
@@ -104,7 +104,7 @@ namespace NetLib
 					
 		NetResult ResetConnection()
 		{
-			//TODO ÀÎÀÚ¸¦ ¹Ş¾Æ¼­ ¹Ù·Î ¿©±â¼­ ¾Æ·¡ ÄÚµå¸¦ ½ÇÇàÇÏ°Å³ª È¤Àº Accept½º·¹µå¿¡ Accept ¿äÃ»À» ÇÏµµ·Ï ÇÑ´Ù
+			//TODO ì¸ìë¥¼ ë°›ì•„ì„œ ë°”ë¡œ ì—¬ê¸°ì„œ ì•„ë˜ ì½”ë“œë¥¼ ì‹¤í–‰í•˜ê±°ë‚˜ í˜¹ì€ AcceptìŠ¤ë ˆë“œì— Accept ìš”ì²­ì„ í•˜ë„ë¡ í•œë‹¤
 			m_pRecvOverlappedEx->OverlappedExRemainByte = 0;
 			m_pRecvOverlappedEx->OverlappedExTotalByte = 0;
 			m_pSendOverlappedEx->OverlappedExRemainByte = 0;
@@ -116,7 +116,7 @@ namespace NetLib
 		
 		bool BindIOCP()
 		{			
-			//Áï½Ã Á¢¼Ó Á¾·áÇÏ±â À§ÇÑ ¼ÒÄÏ ¿É¼Ç Ãß°¡
+			//ì¦‰ì‹œ ì ‘ì† ì¢…ë£Œí•˜ê¸° ìœ„í•œ ì†Œì¼“ ì˜µì…˜ ì¶”ê°€
 			linger li = { 0, 0 };
 			li.l_onoff = 1;
 			setsockopt(m_ClientSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&li), sizeof(li));
@@ -169,7 +169,7 @@ namespace NetLib
 				&m_pRecvOverlappedEx->Overlapped,
 				NULL);
 
-			// ¿¡·¯°¡ WSA_IO_PENDINGÀÎ °æ¿ì´Â ³ªÁß¿¡ ¿Ï·á Åëº¸°¡ ¿Â´Ù
+			// ì—ëŸ¬ê°€ WSA_IO_PENDINGì¸ ê²½ìš°ëŠ” ë‚˜ì¤‘ì— ì™„ë£Œ í†µë³´ê°€ ì˜¨ë‹¤
 			if (result == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 			{
 				return NetResult::PostRecv_Null_Socket_Error;
@@ -180,7 +180,7 @@ namespace NetLib
 		
 		bool PostSend(const INT32 sendSize)
 		{
-			//³²Àº ÆĞÅ¶ÀÌ Á¸ÀçÇÏ´ÂÁö È®ÀÎÇÏ±â À§ÇÑ °úÁ¤
+			//ë‚¨ì€ íŒ¨í‚·ì´ ì¡´ì¬í•˜ëŠ”ì§€ í™•ì¸í•˜ê¸° ìœ„í•œ ê³¼ì •
 			if (sendSize > 0)
 			{
 				m_RingSendBuffer.SetUsedBufferSize(sendSize);
@@ -333,14 +333,14 @@ namespace NetLib
 
 	private:
 		INT32 m_Index = INVALID_VALUE;		
-		UINT64 m_UniqueId = 0; //TODO ¸¸¾à »ç¿ë ÇÒ ÇÊ¿ä°¡ ¾øÀ¸¸é »èÁ¦ÇÏ±â
+		UINT64 m_UniqueId = 0; //TODO ë§Œì•½ ì‚¬ìš© í•  í•„ìš”ê°€ ì—†ìœ¼ë©´ ì‚­ì œí•˜ê¸°
 				
 		HANDLE m_hIOCP = INVALID_HANDLE_VALUE;
 
 		SOCKET m_ClientSocket = INVALID_SOCKET;
 		SOCKET m_ListenSocket = INVALID_SOCKET;
 				
-		//TODO Á¤Àû ÇÒ´çÀ¸·Î ¹Ù²Û´Ù
+		//TODO ì •ì  í• ë‹¹ìœ¼ë¡œ ë°”ê¾¼ë‹¤
 		OVERLAPPED_EX* m_pRecvOverlappedEx = nullptr;
 		OVERLAPPED_EX* m_pSendOverlappedEx = nullptr;
 		OVERLAPPED_EX* m_pDisConnectOverlappedEx = nullptr;
